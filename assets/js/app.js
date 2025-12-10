@@ -1,52 +1,33 @@
 const video = document.getElementById("video");
 const canvas = document.getElementById("overlay");
 let currentDescriptor = null;  // GLOBAL VARIABLE
-let currentStream = null;      // for switching camera
+let currentStream = null;      // store camera stream for switching
 
 
-// ============ SMART CAMERA LIST ============
-async function loadCameraList() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const cams = devices.filter(d => d.kind === "videoinput");
+// ========== LOAD MODELS ==========
+async function loadModels() {
+    const basePath = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "");
 
-    const camSelect = document.getElementById("cameraSelect");
-    if (!camSelect) return;
+    await faceapi.nets.tinyFaceDetector.loadFromUri(basePath + "/models");
+    await faceapi.nets.faceLandmark68Net.loadFromUri(basePath + "/models");
+    await faceapi.nets.faceRecognitionNet.loadFromUri(basePath + "/models");
 
-    camSelect.innerHTML = ""; // clear old
-
-    cams.forEach((cam, i) => {
-        const opt = document.createElement("option");
-        opt.value = cam.deviceId;
-        opt.textContent = cam.label || `Camera ${i+1}`;
-        camSelect.appendChild(opt);
-    });
-
-    // Auto-select first camera
-    if (cams.length > 0) startCameraByDevice(cams[0].deviceId);
+    console.log("Models loaded.");
+    startCamera("user");   // default front camera
 }
 
 
-// ============ START CAMERA BY DEVICE ID ============
-function startCameraByDevice(deviceId) {
+
+// ========== START CAMERA (NOW SUPPORTS SWITCH) ==========
+function startCamera(mode = "user") {
+
+    // Stop old camera stream
     if (currentStream) {
         currentStream.getTracks().forEach(t => t.stop());
     }
 
     navigator.mediaDevices.getUserMedia({
-        video: { deviceId: { exact: deviceId } }
-    })
-    .then(stream => {
-        currentStream = stream;
-        video.srcObject = stream;
-    })
-    .catch(err => console.error("Camera open error:", err));
-}
-
-
-// ============ OLD startCamera (for compatibility) ============
-function startCamera() {
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" }
+        video: { facingMode: mode }
     })
     .then(stream => {
         currentStream = stream;
@@ -57,22 +38,7 @@ function startCamera() {
 
 
 
-// ============ LOAD MODELS ============
-async function loadModels() {
-    const basePath = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "");
-
-    await faceapi.nets.tinyFaceDetector.loadFromUri(basePath + "/models");
-    await faceapi.nets.faceLandmark68Net.loadFromUri(basePath + "/models");
-    await faceapi.nets.faceRecognitionNet.loadFromUri(basePath + "/models");
-
-    console.log("Models loaded.");
-
-    await loadCameraList();     // SMART CAMERA LIST RUN
-}
-
-
-
-// ============ DETECTION LOOP ============
+// ========== DETECT LOOP ==========
 video.addEventListener("play", () => {
     const ctx = canvas.getContext("2d");
     const liveText = document.getElementById("live");
@@ -117,7 +83,7 @@ video.addEventListener("play", () => {
             }
         }
 
-        window.currentDescriptor = currentDescriptor; 
+        window.currentDescriptor = currentDescriptor;
 
         requestAnimationFrame(detectLoop);
     };
@@ -126,15 +92,18 @@ video.addEventListener("play", () => {
 });
 
 
-// ============ SWITCH CAMERA HANDLER ============
+
+// ========== CAMERA SWITCH HANDLER ==========
 const camSelect = document.getElementById("cameraSelect");
+
 if (camSelect) {
     camSelect.addEventListener("change", function () {
-        startCameraByDevice(this.value);
+        startCamera(this.value);    // "user" (front) / "environment" (back)
     });
 }
 
 
-// ============ INIT ============
+
+// ========== INIT ==========
 loadModels();
 window.currentDescriptor = currentDescriptor;
