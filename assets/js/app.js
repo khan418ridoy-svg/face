@@ -72,4 +72,4 @@ video.addEventListener("play", () => {
 });
 
 loadModels();
-window.currentDescriptor = currentDescriptor;
+window.currentDescriptor = currentDescriptor;  
