@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Identify Face</title>
+
+    <script src="assets/js/face-api.min.js"></script>
+    <script> window.faceapi = faceapi; </script>
+
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 420px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 0 30px rgba(0, 255, 180, 0.2);
+        color: white;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h1 {
+        font-size: 26px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #00ffa6;
+        text-shadow: 0 0 8px rgba(0,255,150,0.6);
+    }
+
+    video {
+        width: 100%;
+        border-radius: 15px;
+        border: 2px solid rgba(0,255,150,0.3);
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        border-radius: 15px;
+    }
+
+    .wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 12px;
+        border: none;
+        outline: none;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-size: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        background: linear-gradient(135deg, #00ffa6, #00ffcc);
+        color: #0f172a;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 15px #00ffa6;
+    }
+
+    #live, #result, #status {
+        margin-top: 12px;
+        font-size: 16px;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 18px;
+            border-radius: 16px;
+        }
+        h1 {
+            font-size: 22px;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h1>Identify Face</h1>
+
+    <div class="wrapper">
+        <video id="video" autoplay muted></video>
+        <canvas id="overlay"></canvas>
+    </div>
+
+    <h3 id="live">Detecting...</h3>
+
+    <button id="scanBtn">Scan & Identify</button>
+
+    <div id="resultBox">
+        <h3 id="result"></h3>
+    </div>
+</div>
+
+
+<script type="module" src="assets/js/firebase-config.js"></script>
+<script type="module" src="assets/js/utils.js"></script>
+<script type="module" src="assets/js/app.js"></script>
+<script type="module" src="assets/js/identify.js"></script>
+
+</body>
+</html>
