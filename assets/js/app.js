@@ -3,9 +3,9 @@ const canvas = document.getElementById("overlay");
 let currentDescriptor = null;  // GLOBAL VARIABLE
 
 async function loadModels() {
-    await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-    await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
-    await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
+    await faceapi.nets.tinyFaceDetector.loadFromUri("./models");
+    await faceapi.nets.faceLandmark68Net.loadFromUri("./models");
+    await faceapi.nets.faceRecognitionNet.loadFromUri("./models");
 
     console.log("Models loaded.");
     startCamera();
@@ -70,3 +70,4 @@ video.addEventListener("play", () => {
 
 loadModels();
 window.currentDescriptor = currentDescriptor;
+
